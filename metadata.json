@@ -1,0 +1,6 @@
+{
+  "name": "Multi-Platform Software Center",
+  "description": "A unified freeware and open-source software manager for Windows, macOS, and Linux. Browse packages, create custom bootstrap scripts, and manage your installations across multiple platforms.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
