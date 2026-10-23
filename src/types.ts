@@ -40,6 +40,7 @@ export interface Package {
   rating?: number;
   downloads?: string;
   isTrending?: boolean;
+  customIcon?: string;
 }
 
 export interface CustomPackageInput {

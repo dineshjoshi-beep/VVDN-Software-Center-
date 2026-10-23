@@ -11,7 +11,10 @@ import {
   CheckSquare,
   Square,
   Play,
-  FileCode
+  FileCode,
+  FileJson,
+  Rocket,
+  Zap
 } from 'lucide-react';
 import { Package, Platform, PackageManager } from '../types';
 
@@ -23,6 +26,7 @@ interface ScriptBuilderProps {
   allCuratedPackages: Package[];
   onRemoveMultiplePackages?: (ids: string[]) => void;
   onNotify?: (message: string, type: 'success' | 'info' | 'warning' | 'error') => void;
+  onOpenUnifiedInstaller?: () => void;
 }
 
 export const ScriptBuilder: React.FC<ScriptBuilderProps> = ({
@@ -32,13 +36,15 @@ export const ScriptBuilder: React.FC<ScriptBuilderProps> = ({
   onAddBulkPackages,
   allCuratedPackages,
   onRemoveMultiplePackages,
-  onNotify
+  onNotify,
+  onOpenUnifiedInstaller
 }) => {
   const [targetPlatform, setTargetPlatform] = useState<Platform>('windows');
   const [preferredManager, setPreferredManager] = useState<PackageManager>('winget');
   const [windowsScriptFormat, setWindowsScriptFormat] = useState<'bat' | 'ps1'>('bat');
   const [customScriptName, setCustomScriptName] = useState<string>('bootstrap_packages');
   const [exportedRecently, setExportedRecently] = useState<boolean>(false);
+  const [exportedJsonRecently, setExportedJsonRecently] = useState<boolean>(false);
 
   const compatiblePkgs = selectedPackages.filter(p => p.platforms.includes(targetPlatform));
   const activeExtension = targetPlatform === 'windows' ? windowsScriptFormat : 'sh';
@@ -582,6 +588,67 @@ export const ScriptBuilder: React.FC<ScriptBuilderProps> = ({
     }
   };
 
+  const handleExportJson = () => {
+    if (selectedPackages.length === 0) {
+      if (onNotify) {
+        onNotify('No packages in the stack to export as JSON', 'warning');
+      }
+      return;
+    }
+
+    const baseName = getCleanBaseName().replace(/\.json$/i, '');
+    const filename = `${baseName}.json`;
+
+    const exportPayload = {
+      schemaVersion: '1.0.0',
+      exportedAt: new Date().toISOString(),
+      stackName: baseName,
+      configuration: {
+        targetPlatform,
+        preferredManager,
+        windowsScriptFormat,
+        compilerToggles: {
+          bootstrapManager,
+          preFlightUpdates,
+          silentInstall,
+          groupInstalls
+        }
+      },
+      summary: {
+        totalPackages: selectedPackages.length,
+        compatibleCount: compatiblePkgs.length,
+        packageIds: selectedPackages.map(p => p.id)
+      },
+      packages: selectedPackages.map(pkg => ({
+        id: pkg.id,
+        name: pkg.name,
+        category: pkg.category,
+        license: pkg.license,
+        platforms: pkg.platforms,
+        website: pkg.website,
+        description: pkg.description,
+        commands: pkg.commands
+      }))
+    };
+
+    const jsonString = JSON.stringify(exportPayload, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    setExportedJsonRecently(true);
+    setTimeout(() => setExportedJsonRecently(false), 2200);
+    if (onNotify) {
+      onNotify(`Exported ${selectedPackages.length} package(s) to ${filename}`, 'success');
+    }
+  };
+
   const handleBulkInstall = () => {
     if (selectedPackages.length === 0) return;
     
@@ -723,6 +790,42 @@ export const ScriptBuilder: React.FC<ScriptBuilderProps> = ({
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8" id="script-builder-section">
       {/* Configuration Column */}
       <div className="lg:col-span-5 space-y-6">
+        {/* Convert to 1 Application & Automatic System Installer Callout */}
+        {onOpenUnifiedInstaller && (
+          <div className="bg-gradient-to-r from-indigo-950/90 via-slate-900 to-emerald-950/80 border border-emerald-500/30 rounded-2xl p-5 shadow-xl space-y-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-emerald-500 flex items-center justify-center text-white shrink-0 shadow-md">
+                  <Rocket className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400 block">
+                    Single-App Bundler • Zero-Touch Setup
+                  </span>
+                  <h4 className="text-sm font-extrabold text-white">
+                    Convert to 1 App & Auto-Install All
+                  </h4>
+                </div>
+              </div>
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shrink-0">
+                {selectedPackages.length > 0 ? `${selectedPackages.length} Selected` : `${allCuratedPackages.length} Catalog`}
+              </span>
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Convert all selected software into <strong className="text-white">one unified standalone installer application</strong> that automatically elevates permissions and installs everything on your system silently.
+            </p>
+            <button
+              type="button"
+              id="btn-open-unified-installer-builder"
+              onClick={onOpenUnifiedInstaller}
+              className="w-full py-2.5 px-4 bg-gradient-to-r from-indigo-600 to-emerald-600 hover:from-indigo-500 hover:to-emerald-500 text-white text-xs font-extrabold rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all"
+            >
+              <Zap className="w-4 h-4 fill-current" />
+              <span>Convert Into 1 Application & Auto-Install System</span>
+            </button>
+          </div>
+        )}
+
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl">
           <div className="border-b border-slate-850 pb-4">
             <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
@@ -964,14 +1067,26 @@ export const ScriptBuilder: React.FC<ScriptBuilderProps> = ({
                 <span className="text-xs font-bold uppercase text-slate-400 tracking-wider">
                   Packages Stack ({selectedPackages.length})
                 </span>
-                <button
-                  id="btn-clear-stack-side"
-                  onClick={onClearStack}
-                  className="text-[10px] font-semibold text-rose-400 hover:text-rose-300 flex items-center gap-1 bg-rose-950/20 border border-rose-900/30 px-2 py-0.5 rounded cursor-pointer"
-                >
-                  <Trash2 className="w-3 h-3" />
-                  Clear All
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    id="btn-export-json-stack-header"
+                    type="button"
+                    onClick={handleExportJson}
+                    className="text-[10px] font-semibold text-amber-400 hover:text-amber-300 flex items-center gap-1 bg-amber-950/25 border border-amber-800/40 px-2 py-0.5 rounded cursor-pointer transition-colors"
+                    title="Download selected packages as a JSON configuration file"
+                  >
+                    <FileJson className="w-3 h-3" />
+                    <span>Export as JSON</span>
+                  </button>
+                  <button
+                    id="btn-clear-stack-side"
+                    onClick={onClearStack}
+                    className="text-[10px] font-semibold text-rose-400 hover:text-rose-300 flex items-center gap-1 bg-rose-950/20 border border-rose-900/30 px-2 py-0.5 rounded cursor-pointer"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    Clear All
+                  </button>
+                </div>
               </div>
 
               {/* Select All and Batch Remove bar */}
@@ -1064,18 +1179,40 @@ export const ScriptBuilder: React.FC<ScriptBuilderProps> = ({
                 </span>
               </div>
 
-              <button
-                id="btn-export-script-panel"
-                onClick={() => handleDownloadScript()}
-                className="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl border border-indigo-500/40 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-indigo-950/30"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>
-                  {exportedRecently
-                    ? `Exported ${getCleanBaseName()}.${activeExtension}!`
-                    : `Export ${getCleanBaseName()}.${activeExtension} (${targetPlatform.toUpperCase()})`}
-                </span>
-              </button>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button
+                  id="btn-export-script-panel"
+                  onClick={() => handleDownloadScript()}
+                  className="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl border border-indigo-500/40 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-indigo-950/30"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span className="truncate">
+                    {exportedRecently
+                      ? `Exported .${activeExtension}!`
+                      : `Export .${activeExtension} (${targetPlatform.toUpperCase()})`}
+                  </span>
+                </button>
+
+                <button
+                  id="btn-export-json-panel"
+                  type="button"
+                  onClick={handleExportJson}
+                  className="w-full py-2 px-3 bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 hover:text-amber-200 text-xs font-bold rounded-xl border border-amber-500/40 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-lg shadow-amber-950/20"
+                  title="Download currently selected packages as a JSON configuration file"
+                >
+                  {exportedJsonRecently ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <span className="text-emerald-400 truncate">Exported JSON!</span>
+                    </>
+                  ) : (
+                    <>
+                      <FileJson className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">Export as JSON</span>
+                    </>
+                  )}
+                </button>
+              </div>
 
               {/* Quick Cross-OS Export Buttons */}
               <div className="grid grid-cols-3 gap-1.5 pt-1">
@@ -1207,6 +1344,25 @@ export const ScriptBuilder: React.FC<ScriptBuilderProps> = ({
                         <>
                           <Copy className="w-3.5 h-3.5" />
                           <span>Copy Script</span>
+                        </>
+                      )}
+                    </button>
+                    <button
+                      id="btn-export-json-main"
+                      type="button"
+                      onClick={handleExportJson}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 hover:text-amber-200 rounded-lg border border-amber-500/35 transition-all cursor-pointer"
+                      title="Export selected packages as a JSON configuration file for sharing or backup"
+                    >
+                      {exportedJsonRecently ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-emerald-400" />
+                          <span className="text-emerald-400">JSON Saved!</span>
+                        </>
+                      ) : (
+                        <>
+                          <FileJson className="w-3.5 h-3.5" />
+                          <span>Export as JSON</span>
                         </>
                       )}
                     </button>

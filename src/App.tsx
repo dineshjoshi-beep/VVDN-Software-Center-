@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Laptop, 
@@ -18,7 +18,14 @@ import {
   Github,
   TrendingUp,
   Flame,
-  Star
+  Star,
+  Pencil,
+  RotateCcw,
+  X,
+  Rocket,
+  Zap,
+  Palette,
+  Briefcase
 } from 'lucide-react';
 
 import { Package, Platform, Category, ToastNotification } from './types';
@@ -30,6 +37,12 @@ import { ScriptBuilder } from './components/ScriptBuilder';
 import { SystemDoctor } from './components/SystemDoctor';
 import { ToastContainer } from './components/ToastContainer';
 import { PopularityTrendChart } from './components/PopularityTrendChart';
+import { UnifiedAutoInstallerModal } from './components/UnifiedAutoInstallerModal';
+import {
+  getCategoryThemeAndDefaultIcon,
+  renderSoftwareIconContent,
+  SoftwareIconPickerPopover
+} from './components/SoftwareIconRenderer';
 
 export default function App() {
   // Toast notifications state
@@ -50,7 +63,7 @@ export default function App() {
   // Search & Filters
   const [activePlatform, setActivePlatform] = useState<Platform | 'all'>('all');
   const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
-  const [licenseFilter, setLicenseFilter] = useState<'all' | 'freeware' | 'opensource'>('all');
+  const [licenseFilter, setLicenseFilter] = useState<'all' | 'freeware' | 'opensource' | 'office' | 'licensed'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
@@ -76,6 +89,53 @@ export default function App() {
   // Modal / Dialogue views
   const [selectedPackageForDetails, setSelectedPackageForDetails] = useState<Package | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isAppNameDialogOpen, setIsAppNameDialogOpen] = useState(false);
+  const [isUnifiedInstallerOpen, setIsUnifiedInstallerOpen] = useState(false);
+
+  // Portal Application Name & Subtitle state
+  const [appBrandName, setAppBrandName] = useState<string>(() => {
+    return localStorage.getItem('app_brand_name') || 'OmniPkg';
+  });
+  const [appBrandSubtitle, setAppBrandSubtitle] = useState<string>(() => {
+    return localStorage.getItem('app_brand_subtitle') || 'Software Center';
+  });
+  const [draftBrandName, setDraftBrandName] = useState<string>(appBrandName);
+  const [draftBrandSubtitle, setDraftBrandSubtitle] = useState<string>(appBrandSubtitle);
+  const [renameSearchFilter, setRenameSearchFilter] = useState<string>('');
+  const [editingCatalogPkgId, setEditingCatalogPkgId] = useState<string | null>(null);
+  const [editingCatalogPkgName, setEditingCatalogPkgName] = useState<string>('');
+
+  // Custom display name overrides for software applications
+  const [packageNameOverrides, setPackageNameOverrides] = useState<Record<string, string>>(() => {
+    const saved = localStorage.getItem('package_name_overrides');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return {};
+      }
+    }
+    return {};
+  });
+
+  // Portal Brand Logo Icon & Software Package Logo Icon overrides
+  const [appBrandIcon, setAppBrandIcon] = useState<string>(() => {
+    return localStorage.getItem('app_brand_icon') || '';
+  });
+  const [isBrandIconPickerOpen, setIsBrandIconPickerOpen] = useState(false);
+  const [editingIconCatalogPkgId, setEditingIconCatalogPkgId] = useState<string | null>(null);
+
+  const [packageIconOverrides, setPackageIconOverrides] = useState<Record<string, string>>(() => {
+    const saved = localStorage.getItem('package_icon_overrides');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return {};
+      }
+    }
+    return {};
+  });
 
   // Sync to localStorage
   useEffect(() => {
@@ -86,7 +146,143 @@ export default function App() {
     localStorage.setItem('bootstrap_stack_packages', JSON.stringify(bootstrapStack));
   }, [bootstrapStack]);
 
-  const allPackages = [...CURATED_PACKAGES, ...customPackages];
+  useEffect(() => {
+    localStorage.setItem('app_brand_name', appBrandName);
+    localStorage.setItem('app_brand_subtitle', appBrandSubtitle);
+    document.title = `${appBrandName} — ${appBrandSubtitle}`;
+  }, [appBrandName, appBrandSubtitle]);
+
+  useEffect(() => {
+    localStorage.setItem('app_brand_icon', appBrandIcon);
+  }, [appBrandIcon]);
+
+  useEffect(() => {
+    localStorage.setItem('package_name_overrides', JSON.stringify(packageNameOverrides));
+  }, [packageNameOverrides]);
+
+  useEffect(() => {
+    localStorage.setItem('package_icon_overrides', JSON.stringify(packageIconOverrides));
+  }, [packageIconOverrides]);
+
+  const allPackages: Package[] = [...CURATED_PACKAGES, ...customPackages].map((pkg) => ({
+    ...pkg,
+    name: packageNameOverrides[pkg.id] || pkg.name,
+    customIcon: packageIconOverrides[pkg.id] || pkg.customIcon
+  }));
+
+  const handleSavePortalAppName = (e?: FormEvent) => {
+    if (e) e.preventDefault();
+    const cleanName = draftBrandName.trim() || 'OmniPkg';
+    const cleanSub = draftBrandSubtitle.trim() || 'Software Center';
+    setAppBrandName(cleanName);
+    setAppBrandSubtitle(cleanSub);
+    addToast(`Application name updated to "${cleanName}"`, 'success');
+  };
+
+  const handleResetPortalAppName = () => {
+    setAppBrandName('OmniPkg');
+    setAppBrandSubtitle('Software Center');
+    setDraftBrandName('OmniPkg');
+    setDraftBrandSubtitle('Software Center');
+    addToast('Application brand name reset to default', 'info');
+  };
+
+  const handleRenamePackage = (pkgId: string, newName: string) => {
+    const trimmed = newName.trim();
+    if (!trimmed) return;
+
+    setPackageNameOverrides((prev) => ({
+      ...prev,
+      [pkgId]: trimmed
+    }));
+
+    // Also update in customPackages if it's a custom package
+    if (customPackages.some((cp) => cp.id === pkgId)) {
+      setCustomPackages((prev) =>
+        prev.map((cp) => (cp.id === pkgId ? { ...cp, name: trimmed } : cp))
+      );
+    }
+
+    // Keep bootstrapStack and selectedPackageForDetails synchronized
+    setBootstrapStack((prev) =>
+      prev.map((item) => (item.id === pkgId ? { ...item, name: trimmed } : item))
+    );
+    setSelectedPackageForDetails((prev) =>
+      prev && prev.id === pkgId ? { ...prev, name: trimmed } : prev
+    );
+
+    addToast(`Application renamed to "${trimmed}"`, 'success');
+  };
+
+  const handleResetPackageName = (pkgId: string) => {
+    const originalCurated = CURATED_PACKAGES.find((p) => p.id === pkgId);
+    const defaultName = originalCurated?.name;
+    setPackageNameOverrides((prev) => {
+      const next = { ...prev };
+      delete next[pkgId];
+      return next;
+    });
+
+    if (defaultName) {
+      setBootstrapStack((prev) =>
+        prev.map((item) => (item.id === pkgId ? { ...item, name: defaultName } : item))
+      );
+      setSelectedPackageForDetails((prev) =>
+        prev && prev.id === pkgId ? { ...prev, name: defaultName } : prev
+      );
+      addToast(`Restored default application name: "${defaultName}"`, 'info');
+    }
+  };
+
+  const handleChangePackageIcon = (pkgId: string, newIcon: string) => {
+    const trimmed = newIcon.trim();
+    if (!trimmed) return;
+
+    setPackageIconOverrides((prev) => ({
+      ...prev,
+      [pkgId]: trimmed
+    }));
+
+    if (customPackages.some((cp) => cp.id === pkgId)) {
+      setCustomPackages((prev) =>
+        prev.map((cp) => (cp.id === pkgId ? { ...cp, customIcon: trimmed } : cp))
+      );
+    }
+
+    setBootstrapStack((prev) =>
+      prev.map((item) => (item.id === pkgId ? { ...item, customIcon: trimmed } : item))
+    );
+    setSelectedPackageForDetails((prev) =>
+      prev && prev.id === pkgId ? { ...prev, customIcon: trimmed } : prev
+    );
+
+    const targetPkg = allPackages.find((p) => p.id === pkgId);
+    addToast(`Updated software logo icon for "${targetPkg?.name || pkgId}"`, 'success');
+  };
+
+  const handleResetPackageIcon = (pkgId: string) => {
+    setPackageIconOverrides((prev) => {
+      const next = { ...prev };
+      delete next[pkgId];
+      return next;
+    });
+
+    if (customPackages.some((cp) => cp.id === pkgId)) {
+      setCustomPackages((prev) =>
+        prev.map((cp) => (cp.id === pkgId ? { ...cp, customIcon: undefined } : cp))
+      );
+    }
+
+    setBootstrapStack((prev) =>
+      prev.map((item) => (item.id === pkgId ? { ...item, customIcon: undefined } : item))
+    );
+    setSelectedPackageForDetails((prev) =>
+      prev && prev.id === pkgId ? { ...prev, customIcon: undefined } : prev
+    );
+
+    const targetPkg = allPackages.find((p) => p.id === pkgId);
+    addToast(`Restored default logo icon for "${targetPkg?.name || pkgId}"`, 'info');
+  };
 
   // Helper to get deterministic rating for sorting & listing in search dropdown
   const getEnrichedRating = (pkg: Package): number => {
@@ -114,8 +310,37 @@ export default function App() {
     const matchesCategory = selectedCategory === 'all' || pkg.category === selectedCategory;
     
     const licLower = pkg.license.toLowerCase();
+    const descLower = pkg.description.toLowerCase();
+    const nameLower = pkg.name.toLowerCase();
+    const isOfficePackage =
+      pkg.category === 'productivity' ||
+      descLower.includes('office') ||
+      descLower.includes('corporate') ||
+      descLower.includes('enterprise') ||
+      nameLower.includes('office') ||
+      nameLower.includes('corporate') ||
+      nameLower.includes('enterprise') ||
+      descLower.includes('document') ||
+      descLower.includes('spreadsheet') ||
+      descLower.includes('pdf') ||
+      descLower.includes('email') ||
+      descLower.includes('accounting') ||
+      descLower.includes('clipboard') ||
+      ['thunderbird', 'slack', 'zoom', 'zoom-workplace', 'cisco-webex', 'microsoft-teams', 'em-client', 'ditto-clipboard', 'microsoft-powertoys'].includes(pkg.id);
+
+    const isLicensedCommercial =
+      licLower.includes('commercial') ||
+      licLower.includes('enterprise') ||
+      licLower.includes('subscription') ||
+      licLower.includes('perpetual') ||
+      licLower.includes('evaluation') ||
+      licLower.includes('trial') ||
+      licLower.includes('proprietary');
+
     const matchesLicense =
       licenseFilter === 'all' ||
+      (licenseFilter === 'office' && isOfficePackage) ||
+      (licenseFilter === 'licensed' && isLicensedCommercial) ||
       (licenseFilter === 'freeware' && (licLower.includes('freeware') || licLower.includes('freemium') || licLower.includes('personal use'))) ||
       (licenseFilter === 'opensource' && (licLower.includes('mit') || licLower.includes('gpl') || licLower.includes('apache') || licLower.includes('mpl') || licLower.includes('bsd') || licLower.includes('psf')));
 
@@ -197,14 +422,65 @@ export default function App() {
     <div className="flex h-screen w-full bg-[#0f172a] text-slate-200 font-sans overflow-hidden antialiased selection:bg-indigo-500/30 selection:text-indigo-200" id="main-applet-container">
       {/* 1. DESKTOP LEFT SIDEBAR */}
       <aside className="w-64 bg-[#020617] border-r border-slate-800 md:flex flex-col p-6 space-y-8 shrink-0 hidden" id="sidebar-nav">
-        <div className="flex items-center space-x-3 mb-4">
-          <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <Database className="w-5 h-5 text-white animate-pulse" />
+        <div className="flex items-center justify-between mb-4 group/brand relative">
+          <div className="flex items-center space-x-3 min-w-0">
+            <button
+              type="button"
+              onClick={() => setIsBrandIconPickerOpen((prev) => !prev)}
+              className="w-8 h-8 bg-indigo-500 hover:bg-indigo-400 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20 shrink-0 relative group/brandlogo cursor-pointer transition-all"
+              title="Click to change Software Center Logo Icon"
+            >
+              {renderSoftwareIconContent(
+                appBrandIcon,
+                <Database className="w-5 h-5 text-white animate-pulse" />,
+                'w-5 h-5 text-white',
+                'w-6 h-6 object-contain rounded'
+              )}
+              <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-indigo-400 opacity-0 group-hover/brandlogo:opacity-100 transition-opacity">
+                <Palette className="w-2 h-2" />
+              </span>
+            </button>
+            <div className="min-w-0">
+              <span className="font-bold text-lg tracking-tight text-white block truncate" title={appBrandName}>
+                {appBrandName}
+              </span>
+              <span className="text-[10px] text-slate-500 font-bold tracking-wider -mt-1 block uppercase truncate" title={appBrandSubtitle}>
+                {appBrandSubtitle}
+              </span>
+            </div>
           </div>
-          <div>
-            <span className="font-bold text-lg tracking-tight text-white block">OmniPkg</span>
-            <span className="text-[10px] text-slate-500 font-bold tracking-wider -mt-1 block uppercase">Software Center</span>
-          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setDraftBrandName(appBrandName);
+              setDraftBrandSubtitle(appBrandSubtitle);
+              setIsAppNameDialogOpen(true);
+            }}
+            className="p-1.5 text-slate-500 hover:text-indigo-400 hover:bg-slate-900 rounded-lg border border-transparent hover:border-slate-800 transition-all cursor-pointer shrink-0"
+            title="Change Application Name & Software Logo Icons"
+            id="sidebar-rename-app-btn"
+          >
+            <Pencil className="w-3.5 h-3.5" />
+          </button>
+
+          {isBrandIconPickerOpen && (
+            <div className="absolute left-0 top-11 z-50">
+              <SoftwareIconPickerPopover
+                currentIcon={appBrandIcon}
+                onSelectIcon={(newIcon) => {
+                  setAppBrandIcon(newIcon);
+                  addToast('Updated Software Center brand logo icon', 'success');
+                }}
+                onResetIcon={() => {
+                  setAppBrandIcon('');
+                  addToast('Restored default Software Center logo icon', 'info');
+                }}
+                hasCustomIcon={Boolean(appBrandIcon)}
+                onClose={() => setIsBrandIconPickerOpen(false)}
+                title="Change Portal Brand Logo"
+              />
+            </div>
+          )}
         </div>
 
         <div className="space-y-1">
@@ -279,7 +555,19 @@ export default function App() {
             <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20">
               <Database className="w-4.5 h-4.5 text-white" />
             </div>
-            <span className="font-bold text-md text-white">OmniPkg</span>
+            <span className="font-bold text-md text-white truncate max-w-[130px]">{appBrandName}</span>
+            <button
+              type="button"
+              onClick={() => {
+                setDraftBrandName(appBrandName);
+                setDraftBrandSubtitle(appBrandSubtitle);
+                setIsAppNameDialogOpen(true);
+              }}
+              className="p-1 text-slate-400 hover:text-indigo-400 rounded cursor-pointer"
+              title="Change Application Name"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
           </div>
           <div className="flex bg-slate-900 p-1 rounded-lg border border-slate-800">
             <button
@@ -442,7 +730,31 @@ export default function App() {
               </button>
             </div>
 
-            {/* Header Right Action */}
+            {/* Header Right Actions */}
+            <button
+              onClick={() => setIsUnifiedInstallerOpen(true)}
+              className="px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-emerald-600 hover:from-indigo-500 hover:to-emerald-500 text-xs font-extrabold text-white rounded-lg transition-all shadow-md cursor-pointer flex items-center gap-1.5 shrink-0"
+              title="Convert all selected software into 1 application & install automatically on system"
+              id="header-one-app-auto-install-btn"
+            >
+              <Zap className="w-3.5 h-3.5 fill-current" />
+              <span className="hidden sm:inline">1-App Auto Installer</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setDraftBrandName(appBrandName);
+                setDraftBrandSubtitle(appBrandSubtitle);
+                setIsAppNameDialogOpen(true);
+              }}
+              className="px-3 py-1.5 bg-slate-800/80 hover:bg-slate-800 text-xs font-bold text-slate-200 hover:text-white rounded-lg border border-slate-700/70 transition-all cursor-pointer flex items-center gap-1.5 shrink-0"
+              title="Change Application Name or Software Logo Icons"
+              id="header-app-name-option-btn"
+            >
+              <Palette className="w-3.5 h-3.5 text-indigo-400" />
+              <span className="hidden sm:inline">Name & Logo</span>
+            </button>
+
             <button 
               onClick={() => setIsAddDialogOpen(true)}
               className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white rounded-lg transition-all shadow-md cursor-pointer flex items-center gap-1 shrink-0"
@@ -478,7 +790,7 @@ export default function App() {
                     <p className="text-indigo-100/85 mb-6 text-xs sm:text-sm">
                       {featuredPkg.description}
                     </p>
-                    <div className="flex space-x-3">
+                    <div className="flex flex-wrap gap-3">
                       <button 
                         onClick={() => togglePackageInStack(featuredPkg)}
                         className={`px-5 py-2 text-xs font-bold rounded-lg shadow-lg hover:shadow-xl transition-all cursor-pointer ${
@@ -494,6 +806,13 @@ export default function App() {
                         className="px-5 py-2 bg-indigo-500/20 border border-indigo-400/30 text-white font-bold rounded-lg backdrop-blur-sm hover:bg-indigo-500/30 transition-all cursor-pointer text-xs"
                       >
                         Specs & Configs
+                      </button>
+                      <button
+                        onClick={() => setIsUnifiedInstallerOpen(true)}
+                        className="px-4 py-2 bg-emerald-500/25 hover:bg-emerald-500/35 border border-emerald-400/40 text-emerald-200 font-extrabold rounded-lg backdrop-blur-sm transition-all cursor-pointer text-xs flex items-center gap-1.5"
+                      >
+                        <Rocket className="w-3.5 h-3.5" />
+                        <span>Convert All to 1 App & Auto-Install</span>
                       </button>
                     </div>
                   </div>
@@ -521,9 +840,11 @@ export default function App() {
                       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">
                         Explore Categories
                       </span>
-                      <div className="flex bg-slate-900/90 p-0.5 rounded-lg border border-slate-800" id="license-filter-bar">
+                      <div className="flex bg-slate-900/90 p-0.5 rounded-lg border border-slate-800 flex-wrap" id="license-filter-bar">
                         {([
                           { id: 'all', label: 'All Licenses' },
+                          { id: 'office', label: 'Corporate & Office' },
+                          { id: 'licensed', label: 'Licensed / Commercial' },
                           { id: 'freeware', label: 'Freeware' },
                           { id: 'opensource', label: 'Open Source' }
                         ] as const).map((lic) => (
@@ -531,13 +852,15 @@ export default function App() {
                             key={lic.id}
                             id={`license-filter-${lic.id}`}
                             onClick={() => setLicenseFilter(lic.id)}
-                            className={`px-2.5 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer ${
+                            className={`px-2.5 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer flex items-center gap-1 ${
                               licenseFilter === lic.id
                                 ? 'bg-indigo-600 text-white shadow-sm'
                                 : 'text-slate-400 hover:text-slate-200'
                             }`}
                           >
-                            {lic.label}
+                            {lic.id === 'office' && <Briefcase className="w-3 h-3" />}
+                            {lic.id === 'licensed' && <Shield className="w-3 h-3" />}
+                            <span>{lic.label}</span>
                           </button>
                         ))}
                       </div>
@@ -601,6 +924,12 @@ export default function App() {
                         isInStack={bootstrapStack.some((item) => item.id === pkg.id)}
                         onToggleStack={() => togglePackageInStack(pkg)}
                         onViewDetails={() => setSelectedPackageForDetails(pkg)}
+                        onRenamePackage={handleRenamePackage}
+                        isRenamed={Boolean(packageNameOverrides[pkg.id])}
+                        onResetPackageName={handleResetPackageName}
+                        onChangePackageIcon={handleChangePackageIcon}
+                        hasCustomIcon={Boolean(packageIconOverrides[pkg.id])}
+                        onResetPackageIcon={handleResetPackageIcon}
                       />
                     ))}
                   </div>
@@ -624,6 +953,7 @@ export default function App() {
                   allCuratedPackages={allPackages}
                   onRemoveMultiplePackages={removeMultiplePackagesFromStack}
                   onNotify={addToast}
+                  onOpenUnifiedInstaller={() => setIsUnifiedInstallerOpen(true)}
                 />
               </motion.div>
             )}
@@ -651,7 +981,7 @@ export default function App() {
               <span>Repository Sync Active</span>
             </span>
           </div>
-          <div>OmniPkg v1.4.0-alpha • MIT Licensed</div>
+          <div>{appBrandName} v1.4.0-alpha • MIT Licensed</div>
         </footer>
       </div>
 
@@ -662,6 +992,12 @@ export default function App() {
           isInStack={bootstrapStack.some((item) => item.id === selectedPackageForDetails.id)}
           onToggleStack={() => togglePackageInStack(selectedPackageForDetails)}
           onClose={() => setSelectedPackageForDetails(null)}
+          onRenamePackage={handleRenamePackage}
+          isRenamed={Boolean(packageNameOverrides[selectedPackageForDetails.id])}
+          onResetPackageName={handleResetPackageName}
+          onChangePackageIcon={handleChangePackageIcon}
+          hasCustomIcon={Boolean(packageIconOverrides[selectedPackageForDetails.id])}
+          onResetPackageIcon={handleResetPackageIcon}
         />
       )}
 
@@ -673,7 +1009,340 @@ export default function App() {
         />
       )}
 
-      {/* 6. TOAST NOTIFICATIONS PORTAL */}
+      {/* 6. APPLICATION NAME CHANGE DIALOGUE (Portal Brand & Software Catalog Names) */}
+      {isAppNameDialogOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
+          id="app-name-modal-overlay"
+        >
+          <div className="relative w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-5 border-b border-slate-800 bg-slate-950/40">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+                  <Pencil className="w-4 h-4" />
+                </div>
+                <div>
+                  <h2 className="text-base font-extrabold text-white">Application Name Change Options</h2>
+                  <p className="text-xs text-slate-400">
+                    Customize the Software Center brand name or rename individual software applications
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAppNameDialogOpen(false)}
+                className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg border border-slate-700 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-5 overflow-y-auto space-y-6 flex-1">
+              {/* Section 1: Portal / Workspace Application Name */}
+              <form onSubmit={handleSavePortalAppName} className="bg-slate-950/50 border border-slate-800 rounded-xl p-4 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-400">
+                      1. Portal Application Name & Tagline
+                    </h3>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Updates the header, sidebar brand, browser tab title, and footer
+                    </p>
+                  </div>
+                  {(appBrandName !== 'OmniPkg' || appBrandSubtitle !== 'Software Center') && (
+                    <button
+                      type="button"
+                      onClick={handleResetPortalAppName}
+                      className="text-[11px] font-semibold text-amber-400 hover:text-amber-300 flex items-center gap-1 px-2 py-1 rounded bg-amber-950/30 border border-amber-800/40 cursor-pointer"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      <span>Reset Default</span>
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-300 mb-1">
+                      Application Name
+                    </label>
+                    <input
+                      type="text"
+                      value={draftBrandName}
+                      onChange={(e) => setDraftBrandName(e.target.value)}
+                      placeholder="e.g. OmniPkg"
+                      className="w-full bg-slate-900 border border-slate-700 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs font-semibold text-white focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-300 mb-1">
+                      Application Subtitle
+                    </label>
+                    <input
+                      type="text"
+                      value={draftBrandSubtitle}
+                      onChange={(e) => setDraftBrandSubtitle(e.target.value)}
+                      placeholder="e.g. Software Center"
+                      className="w-full bg-slate-900 border border-slate-700 focus:border-indigo-500 rounded-lg px-3 py-2 text-xs font-semibold text-white focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Quick Presets */}
+                <div className="flex items-center justify-between flex-wrap gap-2 pt-1">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[10px] font-bold uppercase text-slate-500 mr-1">Presets:</span>
+                    {[
+                      { name: 'OmniPkg', sub: 'Software Center' },
+                      { name: 'DevStack', sub: 'Package Hub' },
+                      { name: 'FreewareVault', sub: 'App Directory' },
+                      { name: 'Enterprise', sub: 'App Portal' }
+                    ].map((preset) => (
+                      <button
+                        key={preset.name}
+                        type="button"
+                        onClick={() => {
+                          setDraftBrandName(preset.name);
+                          setDraftBrandSubtitle(preset.sub);
+                        }}
+                        className="px-2 py-1 text-[10px] font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 rounded border border-slate-800 cursor-pointer transition-colors"
+                      >
+                        {preset.name}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    type="submit"
+                    className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg shadow transition-all cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Apply App Name</span>
+                  </button>
+                </div>
+              </form>
+
+              {/* Section 2: Rename or Change Logo Icon of Individual Software Applications in Catalog */}
+              <div className="bg-slate-950/50 border border-slate-800 rounded-xl p-4 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-400">
+                      2. Customize Software Names & Logo Icons ({allPackages.length} Apps)
+                    </h3>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Change the logo icon (vector preset, image upload, URL, or emoji) or display name of any software package
+                    </p>
+                  </div>
+                  {(Object.keys(packageNameOverrides).length > 0 || Object.keys(packageIconOverrides).length > 0) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPackageNameOverrides({});
+                        setPackageIconOverrides({});
+                        addToast('All software application names and logo icons restored to defaults', 'info');
+                      }}
+                      className="text-[11px] font-semibold text-amber-400 hover:text-amber-300 flex items-center gap-1 px-2 py-1 rounded bg-amber-950/30 border border-amber-800/40 cursor-pointer self-start sm:self-auto"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      <span>
+                        Reset All ({Object.keys(packageNameOverrides).length + Object.keys(packageIconOverrides).length})
+                      </span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Filter input */}
+                <div className="flex items-center bg-slate-900 rounded-lg px-3 py-1.5 border border-slate-800 focus-within:border-indigo-500">
+                  <Search className="w-3.5 h-3.5 text-slate-500 mr-2" />
+                  <input
+                    type="text"
+                    value={renameSearchFilter}
+                    onChange={(e) => setRenameSearchFilter(e.target.value)}
+                    placeholder="Filter software applications to change logo icon or name (e.g. ONLYOFFICE, Adobe, VS Code)..."
+                    className="bg-transparent border-none text-xs text-slate-200 focus:outline-none w-full placeholder-slate-500"
+                  />
+                </div>
+
+                {/* Scrollable list of apps to rename or change icon */}
+                <div className="max-h-64 overflow-y-auto divide-y divide-slate-800/60 border border-slate-800/80 rounded-lg bg-slate-900/40">
+                  {allPackages
+                    .filter(
+                      (p) =>
+                        !renameSearchFilter.trim() ||
+                        p.name.toLowerCase().includes(renameSearchFilter.toLowerCase()) ||
+                        p.id.toLowerCase().includes(renameSearchFilter.toLowerCase())
+                    )
+                    .slice(0, 35)
+                    .map((pkg) => {
+                      const isEditingThis = editingCatalogPkgId === pkg.id;
+                      const isOverridden = Boolean(packageNameOverrides[pkg.id]);
+                      const hasCustomPkgIcon = Boolean(packageIconOverrides[pkg.id] || pkg.customIcon);
+                      const isIconPickerOpenForPkg = editingIconCatalogPkgId === pkg.id;
+                      const catTheme = getCategoryThemeAndDefaultIcon(pkg.category, pkg.id, 'w-4 h-4');
+
+                      return (
+                        <div
+                          key={pkg.id}
+                          className="relative flex items-center justify-between gap-2 px-3 py-2 hover:bg-slate-800/40 transition-colors"
+                        >
+                          {isEditingThis ? (
+                            <div className="flex items-center gap-2 w-full">
+                              <input
+                                type="text"
+                                value={editingCatalogPkgName}
+                                onChange={(e) => setEditingCatalogPkgName(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    handleRenamePackage(pkg.id, editingCatalogPkgName);
+                                    setEditingCatalogPkgId(null);
+                                  }
+                                  if (e.key === 'Escape') {
+                                    setEditingCatalogPkgId(null);
+                                  }
+                                }}
+                                autoFocus
+                                className="flex-1 bg-slate-950 border border-indigo-500 rounded px-2.5 py-1 text-xs font-bold text-white focus:outline-none"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  handleRenamePackage(pkg.id, editingCatalogPkgName);
+                                  setEditingCatalogPkgId(null);
+                                }}
+                                className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold rounded cursor-pointer"
+                              >
+                                Save
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setEditingCatalogPkgId(null)}
+                                className="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] rounded cursor-pointer"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <div className="min-w-0 flex items-center gap-2.5">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setEditingIconCatalogPkgId(isIconPickerOpenForPkg ? null : pkg.id)
+                                  }
+                                  className={`w-7 h-7 rounded-md border flex items-center justify-center shrink-0 cursor-pointer transition-all ${catTheme.bg} ${catTheme.text} hover:border-indigo-400`}
+                                  title="Click to change software logo icon"
+                                >
+                                  {renderSoftwareIconContent(
+                                    pkg.customIcon,
+                                    catTheme.icon,
+                                    'w-4 h-4',
+                                    'w-5 h-5 object-contain rounded'
+                                  )}
+                                </button>
+                                <span className="text-xs font-bold text-slate-200 truncate">
+                                  {pkg.name}
+                                </span>
+                                <span className="text-[10px] text-slate-500 font-mono uppercase hidden sm:inline">
+                                  ({pkg.category})
+                                </span>
+                                {isOverridden && (
+                                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 font-bold">
+                                    Renamed
+                                  </span>
+                                )}
+                                {hasCustomPkgIcon && (
+                                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold">
+                                    Custom Logo
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setEditingIconCatalogPkgId(isIconPickerOpenForPkg ? null : pkg.id)
+                                  }
+                                  className="px-2 py-1 text-[11px] font-semibold bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white rounded border border-slate-700 hover:border-indigo-500 transition-colors cursor-pointer flex items-center gap-1"
+                                >
+                                  <Palette className="w-3 h-3" />
+                                  <span>Change Logo</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setEditingCatalogPkgId(pkg.id);
+                                    setEditingCatalogPkgName(pkg.name);
+                                  }}
+                                  className="px-2 py-1 text-[11px] font-semibold bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white rounded border border-slate-700 hover:border-indigo-500 transition-colors cursor-pointer flex items-center gap-1"
+                                >
+                                  <Pencil className="w-3 h-3" />
+                                  <span>Name</span>
+                                </button>
+                                {(isOverridden || hasCustomPkgIcon) && (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      if (isOverridden) handleResetPackageName(pkg.id);
+                                      if (hasCustomPkgIcon) handleResetPackageIcon(pkg.id);
+                                    }}
+                                    className="p-1 text-amber-400 hover:text-amber-300 bg-amber-950/30 border border-amber-800/40 rounded cursor-pointer"
+                                    title="Restore default name & logo icon"
+                                  >
+                                    <RotateCcw className="w-3 h-3" />
+                                  </button>
+                                )}
+                              </div>
+                            </>
+                          )}
+
+                          {isIconPickerOpenForPkg && (
+                            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50" onClick={() => setEditingIconCatalogPkgId(null)}>
+                              <div onClick={(e) => e.stopPropagation()}>
+                                <SoftwareIconPickerPopover
+                                  currentIcon={pkg.customIcon}
+                                  onSelectIcon={(newIcon) => handleChangePackageIcon(pkg.id, newIcon)}
+                                  onResetIcon={() => handleResetPackageIcon(pkg.id)}
+                                  hasCustomIcon={hasCustomPkgIcon}
+                                  onClose={() => setEditingIconCatalogPkgId(null)}
+                                  title={`Logo Icon: ${pkg.name}`}
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-slate-800 bg-slate-950/60 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsAppNameDialogOpen(false)}
+                className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-lg border border-slate-700 transition-colors cursor-pointer"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 7. UNIFIED ONE-APPLICATION CONVERTER & AUTOMATIC SYSTEM INSTALLER MODAL */}
+      <UnifiedAutoInstallerModal
+        isOpen={isUnifiedInstallerOpen}
+        onClose={() => setIsUnifiedInstallerOpen(false)}
+        selectedPackages={bootstrapStack}
+        allPackages={allPackages}
+        appBrandName={appBrandName}
+        onSelectAllPackages={(pkgs) => setBootstrapStack(pkgs)}
+        onNotify={addToast}
+      />
+
+      {/* 8. TOAST NOTIFICATIONS PORTAL */}
       <ToastContainer toasts={toasts} onDismiss={removeToast} />
     </div>
   );

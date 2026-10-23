@@ -2557,6 +2557,943 @@ export const CURATED_PACKAGES: Package[] = [
     rating: 4.6,
     downloads: '12M+',
     isTrending: false
+  },
+
+  // --- OFFICE USES & WORKPLACE FREEWARE SUITE ---
+  {
+    id: 'onlyoffice-desktop',
+    name: 'ONLYOFFICE Desktop Editors',
+    description: 'Comprehensive freeware office suite for word documents, spreadsheets, presentations, and fillable PDF forms with 100% MS Office compatibility.',
+    category: 'productivity',
+    website: 'https://www.onlyoffice.com/desktop.aspx',
+    license: 'Freeware (AGPL-3.0)',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'ONLYOFFICE.DesktopEditors', installCmd: 'winget install --id ONLYOFFICE.DesktopEditors -e' },
+        { manager: 'choco', packageId: 'onlyoffice', installCmd: 'choco install onlyoffice -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'onlyoffice', installCmd: 'brew install --cask onlyoffice' }
+      ],
+      linux: [
+        { manager: 'flatpak', packageId: 'org.onlyoffice.desktopeditors', installCmd: 'flatpak install flathub org.onlyoffice.desktopeditors -y' },
+        { manager: 'snap', packageId: 'onlyoffice-desktopeditors', installCmd: 'sudo snap install onlyoffice-desktopeditors' }
+      ]
+    },
+    rating: 4.8,
+    downloads: '22M+',
+    isTrending: true
+  },
+  {
+    id: 'wps-office',
+    name: 'WPS Office Free',
+    description: 'All-in-one freeware office suite featuring Writer, Spreadsheets, Presentation, and built-in PDF toolkit with tabbed document workspace.',
+    category: 'productivity',
+    website: 'https://www.wps.com/',
+    license: 'Freeware (Proprietary)',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Kingsoft.WPSOffice', installCmd: 'winget install --id Kingsoft.WPSOffice -e' },
+        { manager: 'choco', packageId: 'wps-office-free', installCmd: 'choco install wps-office-free -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'wpsoffice', installCmd: 'brew install --cask wpsoffice' }
+      ],
+      linux: [
+        { manager: 'flatpak', packageId: 'com.wps.Office', installCmd: 'flatpak install flathub com.wps.Office -y' },
+        { manager: 'snap', packageId: 'wps-office', installCmd: 'sudo snap install wps-office' }
+      ]
+    },
+    rating: 4.7,
+    downloads: '85M+',
+    isTrending: true
+  },
+  {
+    id: 'softmaker-freeoffice',
+    name: 'SoftMaker FreeOffice',
+    description: 'High-speed office freeware suite (TextMaker, PlanMaker, Presentations) engineered for seamless native DOCX, XLSX, and PPTX editing.',
+    category: 'productivity',
+    website: 'https://www.freeoffice.com/',
+    license: 'Freeware (Proprietary)',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'SoftMaker.FreeOffice.2021', installCmd: 'winget install --id SoftMaker.FreeOffice.2021 -e' },
+        { manager: 'choco', packageId: 'freeoffice', installCmd: 'choco install freeoffice -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'freeoffice', installCmd: 'brew install --cask freeoffice' }
+      ],
+      linux: [
+        { manager: 'apt', packageId: 'softmaker-freeoffice-2021', installCmd: 'sudo apt update && sudo apt install -y libreoffice' }
+      ]
+    },
+    rating: 4.7,
+    downloads: '11M+',
+    isTrending: false
+  },
+  {
+    id: 'apache-openoffice',
+    name: 'Apache OpenOffice',
+    description: 'Classic freeware and open-source office software suite for word processing, spreadsheets, office presentations, vector drawing, and databases.',
+    category: 'productivity',
+    website: 'https://www.openoffice.org/',
+    license: 'Freeware (Apache-2.0)',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Apache.OpenOffice', installCmd: 'winget install --id Apache.OpenOffice -e' },
+        { manager: 'choco', packageId: 'openoffice', installCmd: 'choco install openoffice -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'openoffice', installCmd: 'brew install --cask openoffice' }
+      ],
+      linux: [
+        { manager: 'flatpak', packageId: 'org.openoffice.OpenOffice', installCmd: 'flatpak install flathub org.openoffice.OpenOffice -y' }
+      ]
+    },
+    rating: 4.5,
+    downloads: '60M+',
+    isTrending: false
+  },
+  {
+    id: 'foxit-pdf-reader',
+    name: 'Foxit PDF Reader',
+    description: 'Enterprise-ready office freeware PDF reader for viewing, annotating, form filling, DocuSign integration, and digital signature verification.',
+    category: 'productivity',
+    website: 'https://www.foxit.com/pdf-reader/',
+    license: 'Freeware (Proprietary)',
+    platforms: ['windows', 'macos'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Foxit.FoxitReader', installCmd: 'winget install --id Foxit.FoxitReader -e' },
+        { manager: 'choco', packageId: 'foxitreader', installCmd: 'choco install foxitreader -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'foxitreader', installCmd: 'brew install --cask foxitreader' }
+      ]
+    },
+    rating: 4.7,
+    downloads: '52M+',
+    isTrending: true
+  },
+  {
+    id: 'pdf24-creator',
+    name: 'PDF24 Creator',
+    description: 'Swiss-army office freeware PDF utility with virtual PDF printer, document merger, compressor, OCR text recognition, and watermarking.',
+    category: 'productivity',
+    website: 'https://tools.pdf24.org/en/creator',
+    license: 'Freeware (Enterprise & Office Free)',
+    platforms: ['windows'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'geeksoftwareGmbH.PDF24Creator', installCmd: 'winget install --id geeksoftwareGmbH.PDF24Creator -e' },
+        { manager: 'choco', packageId: 'pdf24', installCmd: 'choco install pdf24 -y' }
+      ]
+    },
+    rating: 4.9,
+    downloads: '26M+',
+    isTrending: true
+  },
+  {
+    id: 'naps2-scanner',
+    name: 'NAPS2 Office Document Scanner',
+    description: 'Streamlined office document scanning freeware supporting WIA/TWAIN scanners, batch duplex scanning, and multi-language OCR to searchable PDF.',
+    category: 'productivity',
+    website: 'https://www.naps2.com/',
+    license: 'Freeware (GPL-2.0)',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Cyanfish.NAPS2', installCmd: 'winget install --id Cyanfish.NAPS2 -e' },
+        { manager: 'choco', packageId: 'naps2', installCmd: 'choco install naps2 -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'naps2', installCmd: 'brew install --cask naps2' }
+      ],
+      linux: [
+        { manager: 'flatpak', packageId: 'com.naps2.Naps2', installCmd: 'flatpak install flathub com.naps2.Naps2 -y' }
+      ]
+    },
+    rating: 4.9,
+    downloads: '14M+',
+    isTrending: false
+  },
+  {
+    id: 'drawio-desktop',
+    name: 'Draw.io Desktop (diagrams.net)',
+    description: 'Security-first offline office diagramming freeware for flowcharts, org charts, BPMN workflows, UML, and network architecture diagrams.',
+    category: 'productivity',
+    website: 'https://www.drawio.com/',
+    license: 'Freeware (Apache-2.0)',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'JGraph.Draw', installCmd: 'winget install --id JGraph.Draw -e' },
+        { manager: 'choco', packageId: 'drawio', installCmd: 'choco install drawio -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'drawio', installCmd: 'brew install --cask drawio' }
+      ],
+      linux: [
+        { manager: 'flatpak', packageId: 'com.jgraph.drawio.desktop', installCmd: 'flatpak install flathub com.jgraph.drawio.desktop -y' },
+        { manager: 'snap', packageId: 'drawio', installCmd: 'sudo snap install drawio' }
+      ]
+    },
+    rating: 4.9,
+    downloads: '19M+',
+    isTrending: true
+  },
+  {
+    id: 'xmind',
+    name: 'Xmind Office Mind Mapping',
+    description: 'Full-featured office mind mapping, brainstorming, organizational chart, and fishbone strategy planning freeware for business teams.',
+    category: 'productivity',
+    website: 'https://xmind.app/',
+    license: 'Freeware (Freemium)',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Xmind.Xmind', installCmd: 'winget install --id Xmind.Xmind -e' },
+        { manager: 'choco', packageId: 'xmind', installCmd: 'choco install xmind -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'xmind', installCmd: 'brew install --cask xmind' }
+      ],
+      linux: [
+        { manager: 'flatpak', packageId: 'net.xmind.XMind', installCmd: 'flatpak install flathub net.xmind.XMind -y' },
+        { manager: 'snap', packageId: 'xmind', installCmd: 'sudo snap install xmind' }
+      ]
+    },
+    rating: 4.7,
+    downloads: '15M+',
+    isTrending: false
+  },
+  {
+    id: 'gnucash',
+    name: 'GnuCash Office Accounting',
+    description: 'Professional double-entry office accounting, small-business bookkeeping, customer invoicing, payroll, and financial reporting freeware.',
+    category: 'productivity',
+    website: 'https://www.gnucash.org/',
+    license: 'Freeware (GPL-2.0+)',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'GnuCash.GnuCash', installCmd: 'winget install --id GnuCash.GnuCash -e' },
+        { manager: 'choco', packageId: 'gnucash', installCmd: 'choco install gnucash -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'gnucash', installCmd: 'brew install --cask gnucash' }
+      ],
+      linux: [
+        { manager: 'apt', packageId: 'gnucash', installCmd: 'sudo apt update && sudo apt install -y gnucash' },
+        { manager: 'flatpak', packageId: 'org.gnucash.GnuCash', installCmd: 'flatpak install flathub org.gnucash.GnuCash -y' }
+      ]
+    },
+    rating: 4.6,
+    downloads: '9.5M+',
+    isTrending: false
+  },
+  {
+    id: 'projectlibre',
+    name: 'ProjectLibre',
+    description: 'Open-source office project management freeware replacing Microsoft Project with Gantt charts, WBS,PERT charts, and resource costing.',
+    category: 'productivity',
+    website: 'https://www.projectlibre.com/',
+    license: 'Freeware (CPAL-1.0)',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'ProjectLibre.ProjectLibre', installCmd: 'winget install --id ProjectLibre.ProjectLibre -e' },
+        { manager: 'choco', packageId: 'projectlibre', installCmd: 'choco install projectlibre -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'projectlibre', installCmd: 'brew install --cask projectlibre' }
+      ],
+      linux: [
+        { manager: 'snap', packageId: 'projectlibre', installCmd: 'sudo snap install projectlibre' }
+      ]
+    },
+    rating: 4.5,
+    downloads: '7.2M+',
+    isTrending: false
+  },
+  {
+    id: 'microsoft-teams',
+    name: 'Microsoft Teams',
+    description: 'Essential office workplace collaboration, video conferencing, enterprise chat, and shared document workspace application.',
+    category: 'internet',
+    website: 'https://www.microsoft.com/en-us/microsoft-teams/group-chat-software',
+    license: 'Freeware (Freemium)',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Microsoft.Teams', installCmd: 'winget install --id Microsoft.Teams -e' },
+        { manager: 'choco', packageId: 'microsoft-teams', installCmd: 'choco install microsoft-teams -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'microsoft-teams', installCmd: 'brew install --cask microsoft-teams' }
+      ],
+      linux: [
+        { manager: 'flatpak', packageId: 'com.github.IsmaelMartinez.teams_for_linux', installCmd: 'flatpak install flathub com.github.IsmaelMartinez.teams_for_linux -y' },
+        { manager: 'snap', packageId: 'teams-for-linux', installCmd: 'sudo snap install teams-for-linux' }
+      ]
+    },
+    rating: 4.6,
+    downloads: '110M+',
+    isTrending: true
+  },
+  {
+    id: 'em-client',
+    name: 'eM Client Office Mail',
+    description: 'Modern office email, calendar, tasks, contacts, and notes desktop client supporting Exchange, Office 365, Google Workspace, and PGP.',
+    category: 'internet',
+    website: 'https://www.emclient.com/',
+    license: 'Freeware (Personal / Free Tier)',
+    platforms: ['windows', 'macos'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'eMClient.eMClient', installCmd: 'winget install --id eMClient.eMClient -e' },
+        { manager: 'choco', packageId: 'em-client', installCmd: 'choco install em-client -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'emclient', installCmd: 'brew install --cask emclient' }
+      ]
+    },
+    rating: 4.7,
+    downloads: '10M+',
+    isTrending: false
+  },
+  {
+    id: 'grammarly-desktop',
+    name: 'Grammarly Desktop',
+    description: 'Cross-application office writing assistant for business emails, proposals, and reports with instant grammar, spelling, and tone suggestions.',
+    category: 'productivity',
+    website: 'https://www.grammarly.com/desktop',
+    license: 'Freeware (Freemium)',
+    platforms: ['windows', 'macos'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Grammarly.Grammarly', installCmd: 'winget install --id Grammarly.Grammarly -e' },
+        { manager: 'choco', packageId: 'grammarly-for-windows', installCmd: 'choco install grammarly-for-windows -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'grammarly-desktop', installCmd: 'brew install --cask grammarly-desktop' }
+      ]
+    },
+    rating: 4.7,
+    downloads: '38M+',
+    isTrending: true
+  },
+  {
+    id: 'ditto-clipboard',
+    name: 'Ditto Office Clipboard Manager',
+    description: 'Essential office productivity extension to the Windows clipboard that saves, searches, and pastes dozens of copied text snippets and tables.',
+    category: 'utilities',
+    website: 'https://ditto-cp.sourceforge.io/',
+    license: 'Freeware (GPL-3.0)',
+    platforms: ['windows'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Ditto.Ditto', installCmd: 'winget install --id Ditto.Ditto -e' },
+        { manager: 'choco', packageId: 'ditto', installCmd: 'choco install ditto -y' }
+      ]
+    },
+    rating: 4.8,
+    downloads: '13M+',
+    isTrending: false
+  },
+  {
+    id: 'microsoft-powertoys',
+    name: 'Microsoft PowerToys',
+    description: 'Official Microsoft office workstation utilities including FancyZones multi-monitor window snapping, Text Extractor OCR, and Awake.',
+    category: 'utilities',
+    website: 'https://learn.microsoft.com/en-us/windows/powertoys/',
+    license: 'Freeware (MIT)',
+    platforms: ['windows'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Microsoft.PowerToys', installCmd: 'winget install --id Microsoft.PowerToys -e' },
+        { manager: 'choco', packageId: 'powertoys', installCmd: 'choco install powertoys -y' }
+      ]
+    },
+    rating: 4.9,
+    downloads: '48M+',
+    isTrending: true
+  },
+
+  // --- CORPORATE OFFICE LICENSED & ENTERPRISE COMMERCIAL SOFTWARE ---
+  {
+    id: 'microsoft-365-enterprise',
+    name: 'Microsoft 365 Apps for Enterprise (Office 365)',
+    description: 'Industry-standard licensed corporate office suite including Word, Excel, PowerPoint, Outlook, OneNote, Access, and OneDrive for Business.',
+    category: 'productivity',
+    website: 'https://www.microsoft.com/en-us/microsoft-365/enterprise',
+    license: 'Commercial License (Corporate / Enterprise)',
+    platforms: ['windows', 'macos'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Microsoft.Office', installCmd: 'winget install --id Microsoft.Office -e' },
+        { manager: 'choco', packageId: 'office365business', installCmd: 'choco install office365business -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'microsoft-office', installCmd: 'brew install --cask microsoft-office' }
+      ]
+    },
+    rating: 4.9,
+    downloads: '250M+',
+    isTrending: true
+  },
+  {
+    id: 'adobe-acrobat-pro',
+    name: 'Adobe Acrobat Pro DC (Corporate License)',
+    description: 'Full licensed corporate PDF solution for editing PDFs, legal redaction, Bates numbering, OCR scanning, contract comparison, and Adobe Sign.',
+    category: 'productivity',
+    website: 'https://www.adobe.com/acrobat/acrobat-pro.html',
+    license: 'Commercial License (Corporate / Subscription)',
+    platforms: ['windows', 'macos'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Adobe.Acrobat.Pro', installCmd: 'winget install --id Adobe.Acrobat.Pro -e' },
+        { manager: 'choco', packageId: 'adobe-acrobat-pro', installCmd: 'choco install adobereader -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'adobe-acrobat-pro', installCmd: 'brew install --cask adobe-acrobat-pro' }
+      ]
+    },
+    rating: 4.8,
+    downloads: '88M+',
+    isTrending: true
+  },
+  {
+    id: 'tableau-desktop',
+    name: 'Tableau Desktop (Corporate BI)',
+    description: 'Licensed enterprise business intelligence and executive visual analytics platform for connecting to corporate data warehouses and KPIs.',
+    category: 'productivity',
+    website: 'https://www.tableau.com/products/desktop',
+    license: 'Commercial License (Enterprise Subscription)',
+    platforms: ['windows', 'macos'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Tableau.Desktop', installCmd: 'winget install --id Tableau.Desktop -e' },
+        { manager: 'choco', packageId: 'tableau-desktop', installCmd: 'choco install tableau-desktop -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'tableau', installCmd: 'brew install --cask tableau' }
+      ]
+    },
+    rating: 4.8,
+    downloads: '24M+',
+    isTrending: true
+  },
+  {
+    id: 'intellij-idea-ultimate',
+    name: 'JetBrains IntelliJ IDEA Ultimate',
+    description: 'Licensed corporate flagship IDE for enterprise Java, Kotlin, Spring Boot, microservices, and database engineering teams.',
+    category: 'development',
+    website: 'https://www.jetbrains.com/idea/',
+    license: 'Commercial License (Corporate Subscription)',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'JetBrains.IntelliJIDEA.Ultimate', installCmd: 'winget install --id JetBrains.IntelliJIDEA.Ultimate -e' },
+        { manager: 'choco', packageId: 'intellijidea-ultimate', installCmd: 'choco install intellijidea-ultimate -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'intellij-idea', installCmd: 'brew install --cask intellij-idea' }
+      ],
+      linux: [
+        { manager: 'snap', packageId: 'intellij-idea-ultimate', installCmd: 'sudo snap install intellij-idea-ultimate --classic' }
+      ]
+    },
+    rating: 4.9,
+    downloads: '34M+',
+    isTrending: true
+  },
+  {
+    id: 'beyond-compare',
+    name: 'Beyond Compare Pro (Corporate License)',
+    description: 'Licensed corporate utility for fast 3-way folder, source code, Excel spreadsheet, and SFTP server comparison and merging.',
+    category: 'development',
+    website: 'https://www.scootersoftware.com/',
+    license: 'Commercial License (Perpetual / Corporate)',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'ScooterSoftware.BeyondCompare.4', installCmd: 'winget install --id ScooterSoftware.BeyondCompare.4 -e' },
+        { manager: 'choco', packageId: 'beyondcompare', installCmd: 'choco install beyondcompare -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'beyond-compare', installCmd: 'brew install --cask beyond-compare' }
+      ],
+      linux: [
+        { manager: 'apt', packageId: 'bcompare', installCmd: 'sudo apt update && sudo apt install -y meld' }
+      ]
+    },
+    rating: 4.9,
+    downloads: '16M+',
+    isTrending: false
+  },
+  {
+    id: '1password-enterprise',
+    name: '1Password for Enterprise & Corporate',
+    description: 'Licensed corporate password and enterprise secrets manager with SSO integration, admin audit policies, and SSH agent.',
+    category: 'security',
+    website: 'https://1password.com/business',
+    license: 'Commercial License (Enterprise Subscription)',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'AgileBits.1Password', installCmd: 'winget install --id AgileBits.1Password -e' },
+        { manager: 'choco', packageId: '1password', installCmd: 'choco install 1password -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: '1password', installCmd: 'brew install --cask 1password' }
+      ],
+      linux: [
+        { manager: 'snap', packageId: '1password', installCmd: 'sudo snap install 1password' },
+        { manager: 'flatpak', packageId: 'com.onepassword.OnePassword', installCmd: 'flatpak install flathub com.onepassword.OnePassword -y' }
+      ]
+    },
+    rating: 4.9,
+    downloads: '31M+',
+    isTrending: true
+  },
+  {
+    id: 'techsmith-snagit',
+    name: 'TechSmith Snagit (Corporate License)',
+    description: 'Licensed corporate office screen capture, step-by-step SOP documentation generator, and annotated video walkthrough software.',
+    category: 'productivity',
+    website: 'https://www.techsmith.com/screen-capture.html',
+    license: 'Commercial License (Corporate / Perpetual)',
+    platforms: ['windows', 'macos'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'TechSmith.Snagit.2024', installCmd: 'winget install --id TechSmith.Snagit.2024 -e' },
+        { manager: 'choco', packageId: 'snagit', installCmd: 'choco install snagit -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'snagit', installCmd: 'brew install --cask snagit' }
+      ]
+    },
+    rating: 4.8,
+    downloads: '22M+',
+    isTrending: false
+  },
+  {
+    id: 'winrar-corporate',
+    name: 'WinRAR Corporate Edition',
+    description: 'Licensed corporate archive manager supporting RAR5, ZIP, AES-256 encryption, self-extracting SFX archives, and recovery volumes.',
+    category: 'utilities',
+    website: 'https://www.win-rar.com/',
+    license: 'Commercial License (Trial / Corporate)',
+    platforms: ['windows'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'RARLab.WinRAR', installCmd: 'winget install --id RARLab.WinRAR -e' },
+        { manager: 'choco', packageId: 'winrar', installCmd: 'choco install winrar -y' }
+      ]
+    },
+    rating: 4.8,
+    downloads: '140M+',
+    isTrending: false
+  },
+  {
+    id: 'sublime-merge',
+    name: 'Sublime Merge (Corporate License)',
+    description: 'High-performance licensed Git client with integrated 3-way merge tool, line-by-line staging, and blame history for corporate repos.',
+    category: 'development',
+    website: 'https://www.sublimemerge.com/',
+    license: 'Commercial License (Evaluation / Corporate)',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'SublimeHQ.SublimeMerge', installCmd: 'winget install --id SublimeHQ.SublimeMerge -e' },
+        { manager: 'choco', packageId: 'sublimemerge', installCmd: 'choco install sublimemerge -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'sublime-merge', installCmd: 'brew install --cask sublime-merge' }
+      ],
+      linux: [
+        { manager: 'snap', packageId: 'sublime-merge', installCmd: 'sudo snap install sublime-merge --classic' }
+      ]
+    },
+    rating: 4.8,
+    downloads: '11M+',
+    isTrending: false
+  },
+  {
+    id: 'vmware-workstation-pro',
+    name: 'VMware Workstation Pro',
+    description: 'Enterprise-grade desktop hypervisor for running multiple isolated Windows and Linux virtual machines, snapshots, and virtual networks.',
+    category: 'utilities',
+    website: 'https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion',
+    license: 'Freeware / Commercial Enterprise License',
+    platforms: ['windows', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'VMware.WorkstationPro', installCmd: 'winget install --id VMware.WorkstationPro -e' },
+        { manager: 'choco', packageId: 'vmwareworkstation', installCmd: 'choco install vmwareworkstation -y' }
+      ],
+      linux: [
+        { manager: 'apt', packageId: 'virtualbox', installCmd: 'sudo apt update && sudo apt install -y virtualbox' }
+      ]
+    },
+    rating: 4.8,
+    downloads: '45M+',
+    isTrending: true
+  },
+
+  // --- CORPORATE OFFICE FREEWARE & ENTERPRISE WORKSTATION TOOLS ---
+  {
+    id: 'microsoft-powerbi-desktop',
+    name: 'Microsoft Power BI Desktop',
+    description: 'Official Microsoft corporate freeware business intelligence, SQL/Excel data modeling, and interactive executive dashboard authoring tool.',
+    category: 'productivity',
+    website: 'https://powerbi.microsoft.com/en-us/desktop/',
+    license: 'Freeware (Corporate / Enterprise)',
+    platforms: ['windows'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Microsoft.PowerBI', installCmd: 'winget install --id Microsoft.PowerBI -e' },
+        { manager: 'choco', packageId: 'powerbi', installCmd: 'choco install powerbi -y' }
+      ]
+    },
+    rating: 4.9,
+    downloads: '72M+',
+    isTrending: true
+  },
+  {
+    id: 'cisco-webex',
+    name: 'Cisco Webex Enterprise',
+    description: 'Corporate office video conferencing, cloud calling, webinar hosting, whiteboarding, and secure enterprise team messaging client.',
+    category: 'internet',
+    website: 'https://www.webex.com/',
+    license: 'Freeware / Commercial Enterprise License',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Cisco.WebexTeams', installCmd: 'winget install --id Cisco.WebexTeams -e' },
+        { manager: 'choco', packageId: 'webex-teams', installCmd: 'choco install webex-teams -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'webex', installCmd: 'brew install --cask webex' }
+      ],
+      linux: [
+        { manager: 'flatpak', packageId: 'com.cisco.Webex', installCmd: 'flatpak install flathub com.cisco.Webex -y' }
+      ]
+    },
+    rating: 4.7,
+    downloads: '68M+',
+    isTrending: true
+  },
+  {
+    id: 'zoom-workplace',
+    name: 'Zoom Workplace Enterprise',
+    description: 'Corporate HD video conferencing, enterprise cloud phone, team chat, AI companion meeting summaries, and conference room connector.',
+    category: 'internet',
+    website: 'https://zoom.us/',
+    license: 'Freeware / Commercial Enterprise License',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Zoom.Zoom', installCmd: 'winget install --id Zoom.Zoom -e' },
+        { manager: 'choco', packageId: 'zoom', installCmd: 'choco install zoom -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'zoom', installCmd: 'brew install --cask zoom' }
+      ],
+      linux: [
+        { manager: 'flatpak', packageId: 'us.zoom.Zoom', installCmd: 'flatpak install flathub us.zoom.Zoom -y' },
+        { manager: 'snap', packageId: 'zoom-client', installCmd: 'sudo snap install zoom-client' }
+      ]
+    },
+    rating: 4.8,
+    downloads: '180M+',
+    isTrending: true
+  },
+  {
+    id: 'forticlient-vpn',
+    name: 'FortiClient Corporate VPN',
+    description: 'Corporate SSL and IPsec VPN freeware client for encrypted remote office connectivity to enterprise FortiGate firewalls.',
+    category: 'security',
+    website: 'https://www.fortinet.com/support/product-downloads',
+    license: 'Freeware (Corporate VPN)',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Fortinet.FortiClientVPN', installCmd: 'winget install --id Fortinet.FortiClientVPN -e' },
+        { manager: 'choco', packageId: 'forticlientvpn', installCmd: 'choco install forticlientvpn -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'forticlient-vpn', installCmd: 'brew install --cask forticlient-vpn' }
+      ],
+      linux: [
+        { manager: 'apt', packageId: 'openfortivpn', installCmd: 'sudo apt update && sudo apt install -y openfortivpn' }
+      ]
+    },
+    rating: 4.6,
+    downloads: '35M+',
+    isTrending: false
+  },
+  {
+    id: 'openvpn-connect',
+    name: 'OpenVPN Connect Enterprise',
+    description: 'Official corporate zero-trust VPN and OpenVPN Access Server desktop client with SAML SSO and hardware token support.',
+    category: 'security',
+    website: 'https://openvpn.net/client/',
+    license: 'Freeware (Corporate / Enterprise)',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'OpenVPNTechnologies.OpenVPNConnect', installCmd: 'winget install --id OpenVPNTechnologies.OpenVPNConnect -e' },
+        { manager: 'choco', packageId: 'openvpn-connect', installCmd: 'choco install openvpn-connect -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'openvpn-connect', installCmd: 'brew install --cask openvpn-connect' }
+      ],
+      linux: [
+        { manager: 'apt', packageId: 'openvpn', installCmd: 'sudo apt update && sudo apt install -y openvpn' }
+      ]
+    },
+    rating: 4.8,
+    downloads: '44M+',
+    isTrending: false
+  },
+  {
+    id: 'tailscale-enterprise',
+    name: 'Tailscale Corporate Mesh VPN',
+    description: 'Zero-config WireGuard corporate mesh VPN that connects enterprise workstations, cloud VPCs, and internal office resources via SSO.',
+    category: 'security',
+    website: 'https://tailscale.com/',
+    license: 'Freeware / Commercial Enterprise License',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Tailscale.Tailscale', installCmd: 'winget install --id Tailscale.Tailscale -e' },
+        { manager: 'choco', packageId: 'tailscale', installCmd: 'choco install tailscale -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'tailscale', installCmd: 'brew install --cask tailscale' }
+      ],
+      linux: [
+        { manager: 'apt', packageId: 'tailscale', installCmd: 'curl -fsSL https://tailscale.com/install.sh | sh' }
+      ]
+    },
+    rating: 4.9,
+    downloads: '18M+',
+    isTrending: true
+  },
+  {
+    id: 'citrix-workspace',
+    name: 'Citrix Workspace Enterprise VDI',
+    description: 'Corporate digital workspace client providing secure unified access to enterprise virtual desktops, internal web apps, and SaaS tools.',
+    category: 'utilities',
+    website: 'https://www.citrix.com/downloads/workspace-app/',
+    license: 'Freeware (Corporate Enterprise)',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Citrix.Workspace', installCmd: 'winget install --id Citrix.Workspace -e' },
+        { manager: 'choco', packageId: 'citrix-workspace', installCmd: 'choco install citrix-workspace -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'citrix-workspace', installCmd: 'brew install --cask citrix-workspace' }
+      ],
+      linux: [
+        { manager: 'apt', packageId: 'remmina', installCmd: 'sudo apt update && sudo apt install -y remmina' }
+      ]
+    },
+    rating: 4.6,
+    downloads: '55M+',
+    isTrending: false
+  },
+  {
+    id: 'winscp-corporate',
+    name: 'WinSCP Corporate SFTP & S3 Client',
+    description: 'Popular corporate Windows SFTP, SCP, FTP, WebDAV, and Amazon S3 client with PowerShell automation and directory synchronization.',
+    category: 'utilities',
+    website: 'https://winscp.net/',
+    license: 'Freeware (GPL-3.0)',
+    platforms: ['windows'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'WinSCP.WinSCP', installCmd: 'winget install --id WinSCP.WinSCP -e' },
+        { manager: 'choco', packageId: 'winscp', installCmd: 'choco install winscp -y' }
+      ]
+    },
+    rating: 4.9,
+    downloads: '39M+',
+    isTrending: false
+  },
+  {
+    id: 'putty-corporate',
+    name: 'PuTTY & Pageant Corporate SSH Suite',
+    description: 'Lightweight corporate SSH/Telnet terminal, PSCP/PSFTP file transfer, PuTTYgen key generator, and Pageant SSH authentication agent.',
+    category: 'development',
+    website: 'https://www.chiark.greenend.org.uk/~sgtatham/putty/',
+    license: 'Freeware (MIT)',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'PuTTY.PuTTY', installCmd: 'winget install --id PuTTY.PuTTY -e' },
+        { manager: 'choco', packageId: 'putty', installCmd: 'choco install putty -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'putty', installCmd: 'brew install putty' }
+      ],
+      linux: [
+        { manager: 'apt', packageId: 'putty', installCmd: 'sudo apt update && sudo apt install -y putty' }
+      ]
+    },
+    rating: 4.8,
+    downloads: '62M+',
+    isTrending: false
+  },
+  {
+    id: 'greenshot',
+    name: 'Greenshot Office Screenshot Tool',
+    description: 'Corporate office screenshot freeware with instant sensitive-data obfuscation and 1-click export to Jira, Confluence, Outlook, and Word.',
+    category: 'productivity',
+    website: 'https://getgreenshot.org/',
+    license: 'Freeware (GPL-3.0)',
+    platforms: ['windows'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Greenshot.Greenshot', installCmd: 'winget install --id Greenshot.Greenshot -e' },
+        { manager: 'choco', packageId: 'greenshot', installCmd: 'choco install greenshot -y' }
+      ]
+    },
+    rating: 4.8,
+    downloads: '27M+',
+    isTrending: false
+  },
+  {
+    id: 'miro-desktop',
+    name: 'Miro Corporate Whiteboard',
+    description: 'Visual corporate collaboration workspace for agile sprint planning, product roadmaps, enterprise architecture, and team workshops.',
+    category: 'productivity',
+    website: 'https://miro.com/apps/',
+    license: 'Freeware / Commercial Enterprise License',
+    platforms: ['windows', 'macos'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'RealtimeBoard.Miro', installCmd: 'winget install --id RealtimeBoard.Miro -e' },
+        { manager: 'choco', packageId: 'miro', installCmd: 'choco install miro -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'miro', installCmd: 'brew install --cask miro' }
+      ]
+    },
+    rating: 4.8,
+    downloads: '29M+',
+    isTrending: true
+  },
+  {
+    id: 'clickup-desktop',
+    name: 'ClickUp Corporate Work Hub',
+    description: 'All-in-one corporate office project management app combining tasks, Gantt charts, OKR goals, whiteboards, time tracking, and docs.',
+    category: 'productivity',
+    website: 'https://clickup.com/download',
+    license: 'Freeware / Commercial Enterprise License',
+    platforms: ['windows', 'macos', 'linux'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'ClickUp.ClickUp', installCmd: 'winget install --id ClickUp.ClickUp -e' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'clickup', installCmd: 'brew install --cask clickup' }
+      ],
+      linux: [
+        { manager: 'snap', packageId: 'clickup', installCmd: 'sudo snap install clickup' }
+      ]
+    },
+    rating: 4.7,
+    downloads: '16M+',
+    isTrending: true
+  },
+  {
+    id: 'asana-desktop',
+    name: 'Asana Enterprise Work Management',
+    description: 'Corporate work management desktop app helping cross-functional office teams orchestrate projects, quarterly OKRs, and workflows.',
+    category: 'productivity',
+    website: 'https://asana.com/download',
+    license: 'Freeware / Commercial Enterprise License',
+    platforms: ['windows', 'macos'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Asana.Asana', installCmd: 'winget install --id Asana.Asana -e' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'asana', installCmd: 'brew install --cask asana' }
+      ]
+    },
+    rating: 4.7,
+    downloads: '19M+',
+    isTrending: false
+  },
+  {
+    id: 'trello-desktop',
+    name: 'Trello Atlassian Kanban Client',
+    description: 'Visual corporate Kanban board application by Atlassian for organizing office workflows, sprint backlogs, and team tasks.',
+    category: 'productivity',
+    website: 'https://trello.com/platforms',
+    license: 'Freeware / Commercial Enterprise License',
+    platforms: ['windows', 'macos'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Atlassian.Trello', installCmd: 'winget install --id Atlassian.Trello -e' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'trello', installCmd: 'brew install --cask trello' }
+      ]
+    },
+    rating: 4.7,
+    downloads: '24M+',
+    isTrending: false
+  },
+  {
+    id: 'loom-desktop',
+    name: 'Loom Corporate Video Messaging',
+    description: 'Async corporate screen and camera recorder for sharing instant video walkthroughs, code reviews, and executive updates.',
+    category: 'productivity',
+    website: 'https://www.loom.com/desktop',
+    license: 'Freeware / Commercial Enterprise License',
+    platforms: ['windows', 'macos'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Loom.Loom', installCmd: 'winget install --id Loom.Loom -e' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'loom', installCmd: 'brew install --cask loom' }
+      ]
+    },
+    rating: 4.8,
+    downloads: '17M+',
+    isTrending: true
+  },
+  {
+    id: 'sourcetree-enterprise',
+    name: 'Atlassian Sourcetree',
+    description: 'Corporate freeware Git and Mercurial desktop GUI client integrating seamlessly with Bitbucket Enterprise, GitHub, and GitLab.',
+    category: 'development',
+    website: 'https://www.sourcetreeapp.com/',
+    license: 'Freeware (Atlassian Corporate)',
+    platforms: ['windows', 'macos'],
+    commands: {
+      windows: [
+        { manager: 'winget', packageId: 'Atlassian.Sourcetree', installCmd: 'winget install --id Atlassian.Sourcetree -e' },
+        { manager: 'choco', packageId: 'sourcetree', installCmd: 'choco install sourcetree -y' }
+      ],
+      macos: [
+        { manager: 'brew', packageId: 'sourcetree', installCmd: 'brew install --cask sourcetree' }
+      ]
+    },
+    rating: 4.7,
+    downloads: '21M+',
+    isTrending: false
   }
 ];
 

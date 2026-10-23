@@ -21,9 +21,18 @@ import {
   TrendingUp,
   Zap,
   Play,
-  FileText
+  FileText,
+  Pencil,
+  RotateCcw,
+  X,
+  Palette
 } from 'lucide-react';
 import { Package, Platform, PackageManager } from '../types';
+import {
+  getCategoryThemeAndDefaultIcon,
+  renderSoftwareIconContent,
+  SoftwareIconPickerPopover
+} from './SoftwareIconRenderer';
 
 interface PackageCardProps {
   pkg: Package;
@@ -31,6 +40,12 @@ interface PackageCardProps {
   isInStack: boolean;
   onToggleStack: () => void;
   onViewDetails: () => void;
+  onRenamePackage?: (pkgId: string, newName: string) => void;
+  isRenamed?: boolean;
+  onResetPackageName?: (pkgId: string) => void;
+  onChangePackageIcon?: (pkgId: string, newIcon: string) => void;
+  hasCustomIcon?: boolean;
+  onResetPackageIcon?: (pkgId: string) => void;
 }
 
 export const PackageCard: React.FC<PackageCardProps> = ({
@@ -38,13 +53,30 @@ export const PackageCard: React.FC<PackageCardProps> = ({
   activePlatform,
   isInStack,
   onToggleStack,
-  onViewDetails
+  onViewDetails,
+  onRenamePackage,
+  isRenamed,
+  onResetPackageName,
+  onChangePackageIcon,
+  hasCustomIcon,
+  onResetPackageIcon
 }) => {
   const [copiedText, setCopiedText] = useState<string | null>(null);
   const [installState, setInstallState] = useState<'idle' | 'installing' | 'completed'>('idle');
   const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
   const [installProgress, setInstallProgress] = useState<number>(0);
   const [isLaunched, setIsLaunched] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [draftName, setDraftName] = useState(pkg.name);
+  const [isEditingIcon, setIsEditingIcon] = useState(false);
+
+  const handleSaveName = () => {
+    const trimmed = draftName.trim();
+    if (trimmed && trimmed !== pkg.name && onRenamePackage) {
+      onRenamePackage(pkg.id, trimmed);
+    }
+    setIsEditingName(false);
+  };
 
   const getCategoryTheme = (category: string, pkgId?: string) => {
     if (pkgId === 'adobe-acrobat-reader') {
@@ -327,9 +359,37 @@ export const PackageCard: React.FC<PackageCardProps> = ({
     >
       <div>
         {/* Category Icon & Platform Badges Row */}
-        <div className="flex justify-between items-start mb-4" id={`card-header-${pkg.id}`}>
-          <div className={`w-12 h-12 rounded-lg border flex items-center justify-center shadow-inner ${catTheme.bg} ${catTheme.text}`}>
-            {catTheme.icon}
+        <div className="flex justify-between items-start mb-4 relative" id={`card-header-${pkg.id}`}>
+          <div className="relative group/icon">
+            <div className={`w-12 h-12 rounded-lg border flex items-center justify-center shadow-inner overflow-hidden ${catTheme.bg} ${catTheme.text}`}>
+              {renderSoftwareIconContent(pkg.customIcon, catTheme.icon)}
+            </div>
+            {onChangePackageIcon && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsEditingIcon(!isEditingIcon);
+                }}
+                className="absolute -bottom-1.5 -right-1.5 w-5 h-5 rounded-full bg-slate-900 hover:bg-indigo-600 text-slate-300 hover:text-white border border-slate-700 flex items-center justify-center shadow-md transition-colors cursor-pointer"
+                title="Change software logo icon"
+                id={`btn-change-icon-${pkg.id}`}
+              >
+                <Palette className="w-2.5 h-2.5" />
+              </button>
+            )}
+
+            {isEditingIcon && onChangePackageIcon && (
+              <div className="absolute left-0 top-14 z-40">
+                <SoftwareIconPickerPopover
+                  currentIcon={pkg.customIcon}
+                  onSelectIcon={(newIcon) => onChangePackageIcon(pkg.id, newIcon)}
+                  onResetIcon={onResetPackageIcon ? () => onResetPackageIcon(pkg.id) : undefined}
+                  hasCustomIcon={hasCustomIcon}
+                  onClose={() => setIsEditingIcon(false)}
+                />
+              </div>
+            )}
           </div>
           
           <div className="flex flex-col items-end gap-1.5">
@@ -361,9 +421,75 @@ export const PackageCard: React.FC<PackageCardProps> = ({
 
         {/* Title & Description */}
         <div className="mb-4">
-          <h4 className="text-white font-bold text-base group-hover:text-indigo-400 transition-colors leading-tight">
-            {pkg.name}
-          </h4>
+          {isEditingName ? (
+            <div className="flex items-center gap-1.5 mb-1">
+              <input
+                type="text"
+                value={draftName}
+                onChange={(e) => setDraftName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSaveName();
+                  if (e.key === 'Escape') {
+                    setDraftName(pkg.name);
+                    setIsEditingName(false);
+                  }
+                }}
+                autoFocus
+                className="w-full bg-slate-950 border border-indigo-500/70 rounded-md px-2 py-1 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                placeholder="Enter application name..."
+              />
+              <button
+                type="button"
+                onClick={handleSaveName}
+                className="p-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md transition-colors cursor-pointer shrink-0"
+                title="Save application name"
+              >
+                <Check className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setDraftName(pkg.name);
+                  setIsEditingName(false);
+                }}
+                className="p-1 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-md transition-colors cursor-pointer shrink-0"
+                title="Cancel"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between gap-2 group/title">
+              <h4 className="text-white font-bold text-base group-hover:text-indigo-400 transition-colors leading-tight truncate">
+                {pkg.name}
+              </h4>
+              {onRenamePackage && (
+                <div className="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDraftName(pkg.name);
+                      setIsEditingName(true);
+                    }}
+                    className="p-1 text-slate-400 hover:text-indigo-400 hover:bg-slate-800/80 rounded transition-colors cursor-pointer"
+                    title="Change application name"
+                  >
+                    <Pencil className="w-3 h-3" />
+                  </button>
+                  {isRenamed && onResetPackageName && (
+                    <button
+                      type="button"
+                      onClick={() => onResetPackageName(pkg.id)}
+                      className="p-1 text-amber-400/80 hover:text-amber-300 hover:bg-slate-800/80 rounded transition-colors cursor-pointer"
+                      title="Reset to default application name"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
           <p className="text-xs text-slate-400 mt-1.5 line-clamp-2 min-h-[32px] leading-relaxed">
             {pkg.description}
           </p>
